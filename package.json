@@ -1,0 +1,19 @@
+{
+  "name": "tim-moran-compliance-audit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Daily unattended Playwright audit of Tim Moran dealership websites for cookie/consent/pixel/privacy compliance, producing a compact PDF report for email.",
+  "main": "run-daily.js",
+  "type": "commonjs",
+  "scripts": {
+    "audit": "node audit.js",
+    "report": "node render-report.js",
+    "start": "node run-daily.js"
+  },
+  "dependencies": {
+    "playwright": "1.62.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
