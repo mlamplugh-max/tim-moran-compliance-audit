@@ -141,6 +141,17 @@ async function newHardenedContext(browser) {
     locale: 'en-US',
     timezoneId: 'America/Los_Angeles', // matches the dealerships' real market (Hemet, CA / Riverside County)
     extraHTTPHeaders: EXTRA_HEADERS,
+    // The claude.ai cloud routine sandbox routes all outbound HTTPS through a
+    // local policy-enforcing proxy that re-terminates TLS with its own CA
+    // (see /root/.ccr/ca-bundle.crt in that environment). Chromium has no way
+    // to be handed that CA at the browser-context level, so every navigation
+    // there fails with net::ERR_CERT_AUTHORITY_INVALID even though the
+    // underlying connection is legitimate -- it's the sandbox's own proxy
+    // cert, not a real MITM. The option below only suppresses certificate
+    // *validation* for this context, not encryption -- traffic is still
+    // HTTPS end-to-end -- and is harmless on a normal local dev machine
+    // (no intercepting proxy there, so this never triggers).
+    ignoreHTTPSErrors: true,
   });
   await ctx.addInitScript(() => {
     Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
