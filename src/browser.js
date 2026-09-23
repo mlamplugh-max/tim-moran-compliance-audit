@@ -139,7 +139,7 @@ async function newHardenedContext(browser) {
     userAgent: REALISTIC_UA,
     viewport: { width: 1366, height: 900 },
     locale: 'en-US',
-    timezoneId: 'America/New_York', // matches the dealerships' real market (metro Atlanta, GA)
+    timezoneId: 'America/Los_Angeles', // matches the dealerships' real market (Hemet, CA / Riverside County)
     extraHTTPHeaders: EXTRA_HEADERS,
   });
   await ctx.addInitScript(() => {
