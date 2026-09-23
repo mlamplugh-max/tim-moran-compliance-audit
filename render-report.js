@@ -2,12 +2,16 @@
 // Renders findings.json into a compact, single-page-ish HTML compliance
 // memo, then uses Playwright's page.pdf() on that HTML (loaded as a local
 // file:// URL) to produce report.pdf. No bot-detection concerns here (it's
-// a local file), so this uses bundled Chromium rather than the Chrome
-// channel that audit.js needs for the live sites.
+// a local file, not a live site), so this doesn't need the hardened
+// context from src/browser.js -- but it DOES still need the same
+// pre-installed-browser-first launch logic (launchBrowser()) rather than a
+// bare `chromium.launch()`, otherwise this step alone would crash in the
+// cloud sandbox the exact same way the original bug did (version-mismatch
+// against the pinned Playwright build, no network download available).
 
 const fs = require('fs');
 const path = require('path');
-const { chromium } = require('playwright');
+const { launchBrowser } = require('./src/browser');
 
 const FINDINGS_PATH = path.join(__dirname, 'findings.json');
 const REPORT_HTML_PATH = path.join(__dirname, 'report.html');
@@ -200,7 +204,7 @@ async function renderReport(findingsPath = FINDINGS_PATH) {
   fs.writeFileSync(REPORT_HTML_PATH, html);
   console.log(`[render-report] wrote ${REPORT_HTML_PATH}`);
 
-  const browser = await chromium.launch({ headless: true });
+  const { browser } = await launchBrowser();
   try {
     const page = await browser.newPage();
     await page.goto(`file://${REPORT_HTML_PATH}`, { waitUntil: 'load' });

@@ -45,6 +45,12 @@ async function runConsentCheck(page, site) {
   const nav = await gotoResilient(page, site.url, { maxAttempts: 3 });
 
   if (!nav.ok) {
+    // Honest degrade, not a crash and not a guess: we genuinely don't know
+    // whether the tracking-pixel consent default is granted or denied here,
+    // because the page itself never loaded (bot-detection block page, or a
+    // hard network error). Report that plainly rather than silently
+    // omitting the check or defaulting to a status that implies we saw
+    // something we didn't.
     return {
       bannerPresence: {
         status: 'error',
@@ -53,8 +59,8 @@ async function runConsentCheck(page, site) {
       },
       consentMode: {
         status: 'error',
-        finding: 'Homepage did not load, so the pre-interaction Consent Mode default could not be read.',
-        evidence: null,
+        finding: 'COULD NOT VERIFY -- bot-detection blocked automated access in this environment (or the homepage failed to load), so the pre-interaction tracking-pixel Consent Mode default could not be read. This is not a "granted" or "denied" finding; it is an unknown that needs a manual check.',
+        evidence: { status: nav.status, error: nav.error },
       },
       trackers: [],
     };
