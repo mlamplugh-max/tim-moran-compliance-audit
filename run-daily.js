@@ -13,7 +13,13 @@ const STATUS_ICON = { good: 'OK', review: '?', gap: '!!', error: 'X' };
 function printSummary(findings) {
   console.log('\n================ DAILY COMPLIANCE AUDIT SUMMARY ================');
   console.log(`Generated: ${findings.generatedAt}`);
-  console.log(`Browser launch mode: ${findings.launchMode}\n`);
+  console.log(
+    `Content source: ${findings.firecrawlPrimary ? 'Firecrawl (primary)' : 'Hardened Playwright only (no FIRECRAWL_API_KEY set)'}`
+  );
+  if (findings.browserLaunchMode) {
+    console.log(`Playwright fallback browser launch mode: ${findings.browserLaunchMode}`);
+  }
+  console.log('');
 
   for (const site of findings.sites) {
     console.log(`[${STATUS_ICON[site.overallStatus] || site.overallStatus}] ${site.name} (${site.url}) -- overall: ${site.overallStatus.toUpperCase()}`);
